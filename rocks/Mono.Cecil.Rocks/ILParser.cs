@@ -99,7 +99,7 @@ namespace Mono.Cecil.Rocks {
 
 		static ParseContext CreateContext (MethodDefinition method, IILVisitor visitor)
 		{
-			var code = method.Module.Read (method, (_, reader) => new CodeReader (reader.image.MetadataSection, reader));
+			var code = method.Module.Read (method, (_, reader) => new CodeReader (reader.image.MetadataSection, reader, _.Body));
 
 			return new ParseContext {
 				Code = code,
