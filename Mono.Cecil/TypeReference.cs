@@ -122,6 +122,14 @@ namespace Mono.Cecil {
 			get { return null; }
 		}
 
+        IGenericInstance IGenericContext.InstanceType {
+            get { return this as IGenericInstance; }
+        }
+
+        IGenericInstance IGenericContext.InstanceMethod {
+            get { return null; }
+        }
+
 		GenericParameterType IGenericParameterProvider.GenericParameterType {
 			get { return GenericParameterType.Type; }
 		}
@@ -272,6 +280,18 @@ namespace Mono.Cecil {
 
 			return module.Resolve (this);
 		}
+
+        /// <summary>
+        /// Returns a TypeReference, with placeholder types (parameters) replaced by their concrete versions (arguments).
+        /// </summary>
+        /// <param name="ctx">Context containing type arguments.</param>
+        /// <returns>An appropriate TypeReference instance.</returns>
+        public virtual TypeReference ApplyTypeArguments(IGenericContext ctx)
+        {
+            if (!ContainsGenericParameter)
+                return this;
+            throw new NotImplementedException();
+        }
 	}
 
 	static partial class Mixin {

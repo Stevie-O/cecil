@@ -49,5 +49,15 @@ namespace Mono.Cecil {
 			Mixin.CheckType (type);
 			this.etype = MD.ElementType.Sentinel;
 		}
-	}
+
+        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+        {
+            if (!HasGenericParameters) return this;
+            
+            TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
+            // if ElementType.ApplyTypeArguments just returned itself, there were no generic parameters to be replaced
+            if (constructed_elt == ElementType) return this;
+            return new SentinelType(constructed_elt);
+        }
+    }
 }

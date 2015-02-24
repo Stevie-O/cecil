@@ -482,6 +482,14 @@ namespace Mono.Cecil {
 		{
 			return this;
 		}
+
+        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+        {
+            if (!HasGenericParameters) return this;
+
+            GenericInstanceType typeSpec = new GenericInstanceType(this, ctx.InstanceType.GenericArguments);
+            return typeSpec;
+        }
 	}
 
 	static partial class Mixin {

@@ -125,5 +125,7 @@ namespace Mono.Cecil {
 		{
 			return this;
 		}
+        
+        // TODO: how should ApplyTypeArguments behave here?
 	}
 }

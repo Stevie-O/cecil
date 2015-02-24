@@ -86,6 +86,14 @@ namespace Mono.Cecil {
 			get { return this; }
 		}
 
+        IGenericInstance IGenericContext.InstanceType {
+            get { return DeclaringType as IGenericInstance; }
+        }
+
+        IGenericInstance IGenericContext.InstanceMethod {
+            get { return this as IGenericInstance; }
+        }
+
 		GenericParameterType IGenericParameterProvider.GenericParameterType {
 			get { return GenericParameterType.Method; }
 		}

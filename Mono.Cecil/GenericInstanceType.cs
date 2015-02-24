@@ -27,10 +27,9 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Text;
-
 using Mono.Collections.Generic;
-
 using MD = Mono.Cecil.Metadata;
 
 namespace Mono.Cecil {
@@ -74,10 +73,43 @@ namespace Mono.Cecil {
 		}
 
 		public GenericInstanceType (TypeReference type)
-			: base (type)
+			: this(type, null)
 		{
-			base.IsValueType = type.IsValueType;
+        }
+
+		public GenericInstanceType (TypeReference type, ICollection<TypeReference> typeArguments)
+			: base(type)
+		{
+        	base.IsValueType = type.IsValueType;
 			this.etype = MD.ElementType.GenericInst;
+            if (typeArguments != null)
+                arguments = new Collection<TypeReference>(typeArguments);
 		}
+
+        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+        {
+            // TODO: verify this is totally appropriate
+            // It *might* be, if you have a situation like this:
+            // class Foo<T>() {
+            //      List<T> x;
+            // }
+            // where the type of 'x' is actually a GenericTypeInstance where one of the parameters is a generic type parameter
+            if (!HasGenericParameters) return this;
+
+            bool any_different = false;
+            Collection<TypeReference> new_arguments = new Collection<TypeReference>();
+            foreach (TypeReference tr in GenericArguments)
+            {
+                TypeReference tr_mapped = tr.ApplyTypeArguments(ctx);
+                new_arguments.Add(tr_mapped);
+                if (tr_mapped != tr) any_different = true;
+            }
+            // if we didn't replace any of the type arguments, then return ourselves unchanged
+            // This lets other code detect that nothing is different and optimize accordingly
+            if (!any_different) return this;
+            GenericInstanceType mapped_git = new GenericInstanceType(ElementType);
+            mapped_git.arguments = new_arguments;
+            return mapped_git;
+        }
 	}
 }
