@@ -137,5 +137,23 @@ namespace Mono.Cecil {
 				dimensions.Add (new ArrayDimension ());
 			this.etype = MD.ElementType.Array;
 		}
+
+
+        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+        {
+            if (!ContainsGenericParameter) return this;
+
+            TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
+            // if ElementType.ApplyTypeArguments just returned itself, there were no generic parameters to be replaced
+            if (constructed_elt == ElementType) return this;
+            // convert e.g. T[] to int[]
+
+            ArrayType new_array_type = new ArrayType(constructed_elt);
+            // copy the Dimensions
+            if (this.dimensions != null)
+                new_array_type.dimensions = new Collection<ArrayDimension>(this.dimensions);
+            return new_array_type;
+        }
+
 	}
 }
