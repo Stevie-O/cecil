@@ -27,7 +27,7 @@
 //
 
 using System;
-
+using System.Text;
 using Mono.Collections.Generic;
 
 namespace Mono.Cecil {
@@ -41,9 +41,11 @@ namespace Mono.Cecil {
 			set { property_type = value; }
 		}
 
-		public abstract Collection<ParameterDefinition> Parameters {
-			get;
-		}
+        /// <summary>
+        /// Gets the set of parameters for this property.
+        /// </summary>
+        /// <returns>An array of objects derived from ParameterReference (never null).</returns>
+        public abstract ParameterReference[] GetParameters();
 
 		internal PropertyReference (string name, TypeReference propertyType)
 			: base (name)
@@ -55,5 +57,31 @@ namespace Mono.Cecil {
 		}
 
 		public abstract PropertyDefinition Resolve ();
-	}
+
+        public abstract bool HasParameters { get; }
+
+        public override string FullName
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                builder.Append(PropertyType.ToString());
+                builder.Append(' ');
+                builder.Append(MemberFullName());
+                builder.Append('(');
+                if (HasParameters)
+                {
+                    var parameters = GetParameters();
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        if (i > 0)
+                            builder.Append(',');
+                        builder.Append(parameters[i].ParameterType.FullName);
+                    }
+                }
+                builder.Append(')');
+                return builder.ToString();
+            }
+        }
+    }
 }
