@@ -107,7 +107,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public bool HasParameters {
+		public override bool HasParameters {
 			get {
 				InitializeMethods ();
 
@@ -121,7 +121,13 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public override Collection<ParameterDefinition> Parameters {
+        [System.ComponentModel.Browsable(false), System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public override ParameterReference[] GetParameters()
+        {
+            return Parameters.ToArray();
+        }
+
+		public Collection<ParameterDefinition> Parameters {
 			get {
 				InitializeMethods ();
 
@@ -190,26 +196,6 @@ namespace Mono.Cecil {
 
 		public override bool IsDefinition {
 			get { return true; }
-		}
-
-		public override string FullName {
-			get {
-				var builder = new StringBuilder ();
-				builder.Append (PropertyType.ToString ());
-				builder.Append (' ');
-				builder.Append (MemberFullName ());
-				builder.Append ('(');
-				if (HasParameters) {
-					var parameters = Parameters;
-					for (int i = 0; i < parameters.Count; i++) {
-						if (i > 0)
-							builder.Append (',');
-						builder.Append (parameters [i].ParameterType.FullName);
-					}
-				}
-				builder.Append (')');
-				return builder.ToString ();
-			}
 		}
 
 		public PropertyDefinition (string name, PropertyAttributes attributes, TypeReference propertyType)
