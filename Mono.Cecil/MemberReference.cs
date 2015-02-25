@@ -87,9 +87,9 @@ namespace Mono.Cecil {
 		internal string MemberFullName ()
 		{
 			if (declaring_type == null)
-				return name;
+				return Name;
 
-			return declaring_type.FullName + "::" + name;
+			return declaring_type.FullName + "::" + Name;
 		}
 
 		public IMemberDefinition Resolve ()
