@@ -54,7 +54,7 @@ namespace Mono.Cecil {
 		}
 
 		IGenericParameterProvider IGenericContext.Type {
-			get { return ElementMethod.DeclaringType; }
+			get { return ((IGenericContext)ElementMethod).Type; }
 		}
 
 		public override bool ContainsGenericParameter {
