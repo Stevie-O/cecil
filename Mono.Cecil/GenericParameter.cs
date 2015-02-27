@@ -214,17 +214,23 @@ namespace Mono.Cecil {
 			return null;
 		}
 
-        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
-        {
-            switch (this.MetadataType)
-            {
-                case Cecil.MetadataType.Var: return ctx.InstanceType.GenericArguments[this.Position];
-                case Cecil.MetadataType.MVar: return ctx.InstanceMethod.GenericArguments[this.Position];
-                default:
-                    // TODO: can this happen? should we raise an error here?
-                    return base.ApplyTypeArguments(ctx);
-            }
-        }
+		public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+		{
+			switch (this.MetadataType)
+			{
+				case Cecil.MetadataType.Var: 
+					IGenericInstance instType = ctx.InstanceType;
+					if (instType == null) return this;
+					return instType.GenericArguments[this.Position];
+				case Cecil.MetadataType.MVar:
+					IGenericInstance instMethod = ctx.InstanceMethod;
+					if (instMethod == null) return this;
+					return instMethod.GenericArguments[this.Position];
+				default:
+					// TODO: can this happen? should we raise an error here?
+					return base.ApplyTypeArguments(ctx);
+			}
+		}
 	}
 
 	sealed class GenericParameterCollection : Collection<GenericParameter> {
