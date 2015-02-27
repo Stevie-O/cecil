@@ -57,15 +57,15 @@ namespace Mono.Cecil {
 			Mixin.CheckType (type);
 			this.etype = MD.ElementType.Ptr;
 		}
-    
-        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
-        {
-            if (!HasGenericParameters) return this;
+	
+		public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+		{
+			if (!ContainsGenericParameter) return this;
 
-            TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
-            // if ElementType.ApplyTypeArguments just returned itself, there were no generic parameters to be replaced
-            if (constructed_elt == ElementType) return this;
-            return new PointerType(constructed_elt);
-        }
-    }
+			TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
+			// if ElementType.ApplyTypeArguments just returned itself, there were no generic parameters to be replaced
+			if (constructed_elt == ElementType) return this;
+			return new PointerType(constructed_elt);
+		}
+	}
 }

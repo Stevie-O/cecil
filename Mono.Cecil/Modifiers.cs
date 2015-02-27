@@ -79,18 +79,18 @@ namespace Mono.Cecil {
 			this.etype = MD.ElementType.CModOpt;
 		}
 
-        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
-        {
-            if (!HasGenericParameters) return this;
+		public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+		{
+			if (!ContainsGenericParameter) return this;
 
-            // 2015-02-24 (SMO): I don't understand how modifier types work, so I hope this is correct
-            TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
-            TypeReference constructed_mod = ModifierType.ApplyTypeArguments(ctx);
+			// 2015-02-24 (SMO): I don't understand how modifier types work, so I hope this is correct
+			TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
+			TypeReference constructed_mod = ModifierType.ApplyTypeArguments(ctx);
 
-            if (constructed_elt == ElementType && constructed_mod == ModifierType) return this;
+			if (constructed_elt == ElementType && constructed_mod == ModifierType) return this;
 
-            return new OptionalModifierType(constructed_mod, constructed_elt);
-        }
+			return new OptionalModifierType(constructed_mod, constructed_elt);
+		}
 	}
 
 	public sealed class RequiredModifierType : TypeSpecification, IModifierType {
@@ -135,19 +135,19 @@ namespace Mono.Cecil {
 			this.etype = MD.ElementType.CModReqD;
 		}
 
-        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
-        {
-            if (!HasGenericParameters) return this;
+		public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+		{
+			if (!ContainsGenericParameter) return this;
 
-            // 2015-02-24 (SMO): I don't understand how modifier types work, so I hope this is correct
-            TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
-            TypeReference constructed_mod = ModifierType.ApplyTypeArguments(ctx);
+			// 2015-02-24 (SMO): I don't understand how modifier types work, so I hope this is correct
+			TypeReference constructed_elt = ElementType.ApplyTypeArguments(ctx);
+			TypeReference constructed_mod = ModifierType.ApplyTypeArguments(ctx);
 
-            if (constructed_elt == ElementType && constructed_mod == ModifierType) return this;
+			if (constructed_elt == ElementType && constructed_mod == ModifierType) return this;
 
-            return new RequiredModifierType(constructed_mod, constructed_elt);
-        }
-    }
+			return new RequiredModifierType(constructed_mod, constructed_elt);
+		}
+	}
 
 	static partial class Mixin {
 
