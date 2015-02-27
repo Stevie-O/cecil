@@ -43,20 +43,11 @@ namespace Mono.Cecil {
 			get { return this.ContainsGenericParameter () || base.ContainsGenericParameter; }
 		}
 
-		public override string FullName {
-			get {
-				var signature = new StringBuilder ();
-				var method = this.ElementMethod;
-				signature.Append (method.ReturnType.FullName)
-					.Append (" ")
-					.Append (method.DeclaringType.FullName)
-					.Append ("::")
-					.Append (method.Name);
-				this.GenericInstanceFullName (signature);
-				this.MethodSignatureFullName (signature);
-				return signature.ToString ();
-
-			}
+		protected override string MemberFullName()
+		{
+			StringBuilder sb = new StringBuilder(base.MemberFullName());
+			this.GenericInstanceFullName(sb);
+			return sb.ToString();
 		}
 
 		public GenericInstanceMethod (MethodReference method)
