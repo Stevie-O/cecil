@@ -63,7 +63,7 @@ namespace Mono.Cecil.Tests {
 
 		public static MethodReference MakeGeneric (this MethodReference self, params TypeReference [] arguments)
 		{
-			var reference = new MethodReference {
+			var reference = new ModuleMethodReference {
 				Name = self.Name,
 				DeclaringType = self.DeclaringType.MakeGenericType (arguments),
 				HasThis = self.HasThis,
@@ -72,8 +72,10 @@ namespace Mono.Cecil.Tests {
 				CallingConvention = self.CallingConvention,
 			};
 
-			foreach (var parameter in self.Parameters)
-				reference.Parameters.Add (new ParameterDefinition (parameter.ParameterType));
+			var reference_parameters = reference.ReceiveParameters(self.ParameterCount);
+
+			foreach (var parameter in self.GetParameters())
+				reference_parameters.AddParameter(parameter.ParameterType);
 
 			foreach (var generic_parameter in self.GenericParameters)
 				reference.GenericParameters.Add (new GenericParameter (generic_parameter.Name, reference));

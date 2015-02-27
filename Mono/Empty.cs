@@ -41,6 +41,17 @@ namespace Mono.Cecil {
 			return self == null || self.size == 0;
 		}
 
+		/// <summary>
+		/// Returns the number of elements in the collection, or 0 if null.
+		/// </summary>
+		/// <param name="self">A reference to a collection object</param>
+		/// <returns>For null references, the return value is 0; otherwise, returns the numger</returns>
+		public static int GetCountOrZero<T>(this Collection<T> self)
+		{
+			if (self == null) return 0;
+			return self.Count;
+		}
+
 		public static T [] Resize<T> (this T [] self, int length)
 		{
 			Array.Resize (ref self, length);

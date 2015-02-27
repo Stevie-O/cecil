@@ -247,8 +247,8 @@ namespace Mono.Cecil.Tests {
 				Assert.IsTrue (fptr.HasThis);
 				Assert.IsTrue (fptr.ExplicitThis);
 
-				Assert.AreEqual (0, fptr.Parameters [0].Sequence);
-				Assert.AreEqual (1, fptr.Parameters [1].Sequence);
+				Assert.AreEqual (0, fptr.GetParameters()[0].Sequence);
+				Assert.AreEqual (1, fptr.GetParameters()[1].Sequence);
 			}, verify: false);
 		}
 

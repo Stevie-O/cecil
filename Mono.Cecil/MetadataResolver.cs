@@ -264,7 +264,7 @@ namespace Mono.Cecil {
 				if (!method.HasParameters && !reference.HasParameters)
 					return method;
 
-				if (!AreSame (method.Parameters, reference.Parameters))
+				if (!AreSame (method.GetParameters(), reference.GetParameters()))
 					continue;
 
 				return method;
@@ -273,7 +273,24 @@ namespace Mono.Cecil {
 			return null;
 		}
 
-		static bool AreSame (Collection<ParameterDefinition> a, Collection<ParameterDefinition> b)
+		static bool AreSame(ParameterReference[] a, ParameterReference[] b)
+		{
+			var count = a.Length;
+
+			if (count != b.Length)
+				return false;
+
+			if (count == 0)
+				return true;
+
+			for (int i = 0; i < count; i++)
+				if (!AreSame(a[i].ParameterType, b[i].ParameterType))
+					return false;
+
+			return true;
+		}
+
+		static bool AreSame(Collection<ParameterDefinition> a, Collection<ParameterDefinition> b)
 		{
 			var count = a.Count;
 
@@ -290,16 +307,18 @@ namespace Mono.Cecil {
 			return true;
 		}
 
-		static bool IsVarArgCallTo (MethodDefinition method, MethodReference reference)
+		static bool IsVarArgCallTo(MethodReference method, MethodReference reference)
 		{
-			if (method.Parameters.Count >= reference.Parameters.Count)
+			if (method.ParameterCount >= reference.ParameterCount)
 				return false;
 
-			if (reference.GetSentinelPosition () != method.Parameters.Count)
+			if (reference.GetSentinelPosition() != method.ParameterCount)
 				return false;
 
-			for (int i = 0; i < method.Parameters.Count; i++)
-				if (!AreSame (method.Parameters [i].ParameterType, reference.Parameters [i].ParameterType))
+			var method_Parameters = method.GetParameters();
+			var reference_Parameters = reference.GetParameters();
+			for (int i = 0; i < method.ParameterCount; i++)
+				if (!AreSame(method_Parameters[i].ParameterType, reference_Parameters[i].ParameterType))
 					return false;
 
 			return true;

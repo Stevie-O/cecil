@@ -42,8 +42,8 @@ namespace Mono.Cecil {
 			set { throw new InvalidOperationException (); }
 		}
 
-		public override MethodReturnType MethodReturnType {
-			get { return method.MethodReturnType; }
+		public override TypeReference ReturnType {
+			get { return method.ReturnType; }
 			set { throw new InvalidOperationException (); }
 		}
 
@@ -60,8 +60,12 @@ namespace Mono.Cecil {
 			get { return method.HasParameters; }
 		}
 
-		public override Collection<ParameterDefinition> Parameters {
-			get { return method.Parameters; }
+		public override int ParameterCount {
+			get { return method.ParameterCount; }
+		}
+
+		public override ParameterReference[] GetParameters() {
+			return method.GetParameters();
 		}
 
 		public override bool ContainsGenericParameter {
@@ -79,6 +83,11 @@ namespace Mono.Cecil {
 		public sealed override MethodReference GetElementMethod ()
 		{
 			return method.GetElementMethod ();
+		}
+
+		protected internal override IParameterReferenceReceiver ReceiveParameters(int numParameters)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

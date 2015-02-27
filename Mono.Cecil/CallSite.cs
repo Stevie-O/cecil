@@ -15,7 +15,7 @@ using Mono.Collections.Generic;
 
 namespace Mono.Cecil {
 
-	public sealed class CallSite : IMethodSignature {
+	public sealed class CallSite : IMethodSignature, IMethodSignatureInternal {
 
 		readonly MethodReference signature;
 
@@ -38,17 +38,17 @@ namespace Mono.Cecil {
 			get { return signature.HasParameters; }
 		}
 
-		public Collection<ParameterDefinition> Parameters {
-			get { return signature.Parameters; }
+		public int ParameterCount {
+			get { return signature.ParameterCount; }
+		}
+
+		public ParameterReference[] GetParameters() {
+			return signature.GetParameters();
 		}
 
 		public TypeReference ReturnType {
-			get { return signature.MethodReturnType.ReturnType; }
-			set { signature.MethodReturnType.ReturnType = value; }
-		}
-
-		public MethodReturnType MethodReturnType {
-			get { return signature.MethodReturnType; }
+			get { return signature.ReturnType; }
+			set { signature.ReturnType = value; }
 		}
 
 		public string Name {
@@ -85,7 +85,7 @@ namespace Mono.Cecil {
 
 		internal CallSite ()
 		{
-			this.signature = new MethodReference ();
+			this.signature = new ModuleMethodReference ();
 			this.signature.token = new MetadataToken (TokenType.Signature, 0);
 		}
 
@@ -101,6 +101,11 @@ namespace Mono.Cecil {
 		public override string ToString ()
 		{
 			return FullName;
+		}
+
+		IParameterReferenceReceiver IMethodSignatureInternal.ReceiveParameters(int numParameters)
+		{
+			return ((IMethodSignatureInternal)signature).ReceiveParameters(numParameters);
 		}
 	}
 }

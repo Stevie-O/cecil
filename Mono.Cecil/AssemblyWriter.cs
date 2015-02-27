@@ -2666,7 +2666,7 @@ namespace Mono.Cecil {
 			if (generic_arity > 0)
 				calling_convention |= 0x10;
 
-			var param_count = method.HasParameters ? method.Parameters.Count : 0;
+			var param_count = method.ParameterCount;
 
 			WriteByte (calling_convention);
 
@@ -2679,7 +2679,7 @@ namespace Mono.Cecil {
 			if (param_count == 0)
 				return;
 
-			var parameters = method.Parameters;
+			var parameters = method.GetParameters();
 
 			for (int i = 0; i < param_count; i++)
 				WriteTypeSignature (parameters [i].ParameterType);
@@ -2866,9 +2866,9 @@ namespace Mono.Cecil {
 				return;
 
 			var arguments = attribute.ConstructorArguments;
-			var parameters = attribute.Constructor.Parameters;
+			var parameters = attribute.Constructor.GetParameters();
 
-			if (parameters.Count != arguments.Count)
+			if (parameters.Length != arguments.Count)
 				throw new InvalidOperationException ();
 
 			for (int i = 0; i < arguments.Count; i++)

@@ -49,7 +49,7 @@ namespace Mono.Cecil.Rocks {
 			}
 
 			if (method.HasParameters)
-				WriteParameters (method.Parameters);
+				WriteParameters (method.GetParameters());
 
 			if (IsConversionOperator (method))
 				WriteReturnType (method);
@@ -75,10 +75,10 @@ namespace Mono.Cecil.Rocks {
 			WriteDefinition ('P', property);
 
 			if (property.HasParameters)
-				WriteParameters (property.Parameters);
+				WriteParameters (property.GetParameters());
 		}
 
-		void WriteParameters (IList<ParameterDefinition> parameters)
+		void WriteParameters (IList<ParameterReference> parameters)
 		{
 			id.Append ('(');
 			WriteList (parameters, p => WriteTypeSignature (p.ParameterType));
@@ -160,7 +160,7 @@ namespace Mono.Cecil.Rocks {
 			WriteTypeSignature (type.ReturnType);
 
 			if (type.HasParameters)
-				WriteParameters (type.Parameters);
+				WriteParameters (type.GetParameters());
 		}
 
 		void WriteArrayTypeSignature (ArrayType type)

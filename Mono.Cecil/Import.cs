@@ -385,7 +385,7 @@ namespace Mono.Cecil {
 			if (IsGenericInstance (method.DeclaringType))
 				method = ResolveMethodDefinition (method);
 
-			var reference = new MethodReference {
+			var reference = new ModuleMethodReference {
 				Name = method.Name,
 				HasThis = HasCallingConvention (method, SR.CallingConventions.HasThis),
 				ExplicitThis = HasCallingConvention (method, SR.CallingConventions.ExplicitThis),
@@ -406,11 +406,11 @@ namespace Mono.Cecil {
 					: ImportType (typeof (void), default (ImportGenericContext));
 
 				var parameters = method.GetParameters ();
-				var reference_parameters = reference.Parameters;
+				var reference_parameters = reference.ReceiveParameters(parameters.Length);
 
 				for (int i = 0; i < parameters.Length; i++)
-					reference_parameters.Add (
-						new ParameterDefinition (ImportType (parameters [i].ParameterType, context)));
+					reference_parameters.AddParameter (
+						ImportType (parameters [i].ParameterType, context));
 
 				reference.DeclaringType = declaring_type;
 
@@ -601,9 +601,11 @@ namespace Mono.Cecil {
 				if (!fnptr.HasParameters)
 					return imported_fnptr;
 
-				for (int i = 0; i < fnptr.Parameters.Count; i++)
-					imported_fnptr.Parameters.Add (new ParameterDefinition (
-						ImportType (fnptr.Parameters [i].ParameterType, context)));
+				var fnptr_parameters = fnptr.GetParameters();
+				var imported_fnptr_parameters = imported_fnptr.ReceiveParameters(fnptr.ParameterCount);
+				for (int i = 0; i < fnptr.ParameterCount; i++)
+					imported_fnptr_parameters.AddParameter(
+						ImportType (fnptr_parameters [i].ParameterType, context));
 
 				return imported_fnptr;
 			case ElementType.CModOpt:
@@ -684,7 +686,7 @@ namespace Mono.Cecil {
 
 			var declaring_type = ImportType (method.DeclaringType, context);
 
-			var reference = new MethodReference {
+			var reference = new ModuleMethodReference {
 				Name = method.Name,
 				HasThis = method.HasThis,
 				ExplicitThis = method.ExplicitThis,
@@ -702,11 +704,13 @@ namespace Mono.Cecil {
 				if (!method.HasParameters)
 					return reference;
 
-				var parameters = method.Parameters;
-				var reference_parameters = reference.parameters = new ParameterDefinitionCollection (reference, parameters.Count);
-				for (int i = 0; i < parameters.Count; i++)
-					reference_parameters.Add (
-						new ParameterDefinition (ImportType (parameters [i].ParameterType, context)));
+				var parameters = method.GetParameters();
+
+				var reference_parameters = reference.ReceiveParameters(parameters.Length);
+
+				for (int i = 0; i < parameters.Length; i++)
+					reference_parameters.AddParameter (
+						ImportType (parameters [i].ParameterType, context));
 
 				return reference;
 			} finally {

@@ -21,9 +21,22 @@ namespace Mono.Cecil {
 		MethodCallingConvention CallingConvention { get; set; }
 
 		bool HasParameters { get; }
-		Collection<ParameterDefinition> Parameters { get; }
+		int ParameterCount { get; }
+		ParameterReference[] GetParameters();
 		TypeReference ReturnType { get; set; }
-		MethodReturnType MethodReturnType { get; }
+	}
+
+	/// <summary>
+	/// Combines IMethodSignature with some internal-only methods
+	/// </summary>
+	internal interface IMethodSignatureInternal : IMethodSignature
+	{
+		/// <summary>
+		/// Prepares to receive parameters from AssemblyReader
+		/// </summary>
+		/// <param name="numParameters">Hints at the number of parameters that are going to be added.</param>
+		/// <returns>An object that can be used to add parameter data to this object.</returns>
+		IParameterReferenceReceiver ReceiveParameters(int numParameters);
 	}
 
 	static partial class Mixin {
@@ -38,8 +51,8 @@ namespace Mono.Cecil {
 			builder.Append ("(");
 
 			if (self.HasParameters) {
-				var parameters = self.Parameters;
-				for (int i = 0; i < parameters.Count; i++) {
+				var parameters = self.GetParameters();
+				for (int i = 0; i < parameters.Length; i++) {
 					var parameter = parameters [i];
 					if (i > 0)
 						builder.Append (",");

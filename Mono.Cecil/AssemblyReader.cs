@@ -1829,7 +1829,7 @@ namespace Mono.Cecil {
 			parameter.Attributes = attributes;
 		}
 
-		void ReadMethodSignature (uint signature, IMethodSignature method)
+		void ReadMethodSignature (uint signature, IMethodSignatureInternal method)
 		{
 			var reader = ReadSignature (signature);
 			reader.ReadMethodSignature (method);
@@ -2330,7 +2330,7 @@ namespace Mono.Cecil {
 				field.FieldType = reader.ReadTypeSignature ();
 				return field;
 			} else {
-				var method = new MethodReference ();
+				var method = new ModuleMethodReference ();
 				method.DeclaringType = declaring_type;
 				reader.ReadMethodSignature (method);
 				return method;
@@ -2365,7 +2365,8 @@ namespace Mono.Cecil {
 
 			var type_system = module.TypeSystem;
 
-			var context = new MethodReference (string.Empty, type_system.Void);
+			// TODO: What is this for?
+			var context = new ModuleMethodReference (string.Empty, type_system.Void);
 			context.DeclaringType = new TypeReference (string.Empty, string.Empty, module, type_system.CoreLibrary);
 
 			var member_references = new MemberReference [length];
@@ -2555,7 +2556,7 @@ namespace Mono.Cecil {
 
 			var constructor = attribute.Constructor;
 			if (constructor.HasParameters)
-				reader.ReadCustomAttributeConstructorArguments (attribute, constructor.Parameters);
+				reader.ReadCustomAttributeConstructorArguments (attribute, constructor.GetParameters());
 
 			if (!reader.CanReadMore ())
 				return;
@@ -3403,7 +3404,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public void ReadMethodSignature (IMethodSignature method)
+		public void ReadMethodSignature (IMethodSignatureInternal method)
 		{
 			var calling_convention = ReadByte ();
 
@@ -3435,21 +3436,17 @@ namespace Mono.Cecil {
 
 			var param_count = ReadCompressedUInt32 ();
 
-			method.MethodReturnType.ReturnType = ReadTypeSignature ();
+			method.ReturnType = ReadTypeSignature ();
 
 			if (param_count == 0)
 				return;
 
-			Collection<ParameterDefinition> parameters;
+			IParameterReferenceReceiver parameters;
 
-			var method_ref = method as MethodReference;
-			if (method_ref != null)
-				parameters = method_ref.parameters = new ParameterDefinitionCollection (method, (int) param_count);
-			else
-				parameters = method.Parameters;
+			parameters = method.ReceiveParameters((int)param_count);
 
 			for (int i = 0; i < param_count; i++)
-				parameters.Add (new ParameterDefinition (ReadTypeSignature ()));
+				parameters.AddParameter (ReadTypeSignature ());
 		}
 
 		public object ReadConstantSignature (ElementType type)
@@ -3457,9 +3454,9 @@ namespace Mono.Cecil {
 			return ReadPrimitiveValue (type);
 		}
 
-		public void ReadCustomAttributeConstructorArguments (CustomAttribute attribute, Collection<ParameterDefinition> parameters)
+		public void ReadCustomAttributeConstructorArguments (CustomAttribute attribute, ParameterReference[] parameters)
 		{
-			var count = parameters.Count;
+			var count = parameters.Length;
 			if (count == 0)
 				return;
 
