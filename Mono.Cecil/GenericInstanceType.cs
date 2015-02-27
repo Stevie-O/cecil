@@ -58,6 +58,10 @@ namespace Mono.Cecil {
 			get { return ElementType; }
 		}
 
+		IGenericInstance IGenericContext.InstanceType {
+			get { return this; }
+		}
+
 		public GenericInstanceType (TypeReference type)
 			: this(type, null)
 		{
@@ -80,7 +84,7 @@ namespace Mono.Cecil {
 			//      List<T> x;
 			// }
 			// where the type of 'x' is actually a GenericTypeInstance where one of the parameters is a generic type parameter
-			if (!HasGenericParameters) return this;
+			if (!ContainsGenericParameter) return this;
 
 			bool any_different = false;
 			Collection<TypeReference> new_arguments = new Collection<TypeReference>();
