@@ -1,10 +1,10 @@
-//
-// ParameterDefinitionCollection.cs
+﻿//
+// GenericFieldReference.cs
 //
 // Author:
-//   Jb Evain (jbevain@gmail.com)
+//   Stephen Oberholtzer (stevie@qrpff.net)
 //
-// Copyright (c) 2008 - 2011 Jb Evain
+// Copyright (c) 2015 Stephen Oberholtzer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,27 +27,37 @@
 //
 
 using System;
-
+using System.Collections.Generic;
+using System.Text;
 using Mono.Collections.Generic;
 
-namespace Mono.Cecil {
-
-	sealed class ParameterDefinitionCollection : ParameterReferenceCollection<ParameterDefinition> {
-
-		internal ParameterDefinitionCollection (IMethodSignature method) 
-			: base(method) 
+namespace Mono.Cecil
+{
+	/// <summary>
+	/// Represents a parameter in a ModuleParameter
+	/// </summary>
+	/// <remarks>
+	/// 
+	/// </remarks>
+	sealed class ModuleParameterReference : ParameterReference
+	{
+		public ModuleParameterReference(TypeReference parameterType)
+			: this(string.Empty, parameterType)
 		{
 		}
 
-		internal ParameterDefinitionCollection (IMethodSignature method, int capacity)
-			: base (method, capacity)
+		public ModuleParameterReference(string name, TypeReference parameterType)
+			: base(name, parameterType)
 		{
 		}
 
-
-		protected override ParameterDefinition CreateParameterReference(TypeReference parameterType)
+		public override ParameterDefinition Resolve()
 		{
-			return new ParameterDefinition(parameterType);
+			MethodReference methref = Method as MethodReference;
+			if (methref == null) return null;
+			MethodDefinition methdef = methref.Resolve();
+			if (methdef == null) return null;
+			return methdef.Parameters[Index];
 		}
 	}
 }

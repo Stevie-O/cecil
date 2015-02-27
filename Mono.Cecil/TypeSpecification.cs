@@ -82,6 +82,12 @@ namespace Mono.Cecil {
 		{
 			return element_type.GetElementType ();
 		}
+	
+		public override bool IsConstructed
+		{
+			get { return true; }
+		}
+
 	}
 
 	static partial class Mixin {

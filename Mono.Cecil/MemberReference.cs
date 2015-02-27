@@ -65,7 +65,7 @@ namespace Mono.Cecil {
 		}
 
 		public virtual ModuleDefinition Module {
-			get { return declaring_type != null ? declaring_type.Module : null; }
+            get { return DeclaringType != null ? DeclaringType.Module : null; }
 		}
 
 		public virtual bool IsDefinition {
@@ -73,7 +73,7 @@ namespace Mono.Cecil {
 		}
 
 		public virtual bool ContainsGenericParameter {
-			get { return declaring_type != null && declaring_type.ContainsGenericParameter; }
+            get { return DeclaringType != null && DeclaringType.ContainsGenericParameter; }
 		}
 
 		internal MemberReference ()
@@ -85,12 +85,12 @@ namespace Mono.Cecil {
 			this.name = name ?? string.Empty;
 		}
 
-		internal string MemberFullName ()
+		protected virtual string MemberFullName ()
 		{
-			if (declaring_type == null)
+            if (DeclaringType == null)
 				return Name;
 
-			return declaring_type.FullName + "::" + Name;
+            return DeclaringType.FullName + "::" + Name;
 		}
 
 		public override string ToString ()

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 
 namespace Mono.Cecil {
 
@@ -36,6 +37,7 @@ namespace Mono.Cecil {
 		internal int index = -1;
 		protected TypeReference parameter_type;
 		internal MetadataToken token;
+		internal IMethodSignature method;
 
 		public string Name {
 			get { return name; }
@@ -54,6 +56,10 @@ namespace Mono.Cecil {
 		public MetadataToken MetadataToken {
 			get { return token; }
 			set { token = value; }
+		}
+
+		public IMethodSignature Method {
+			get { return method; }
 		}
 
 		internal ParameterReference (string name, TypeReference parameterType)

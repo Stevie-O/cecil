@@ -291,7 +291,24 @@ namespace Mono.Cecil {
 			return null;
 		}
 
-		static bool AreSame (Collection<ParameterDefinition> a, Collection<ParameterDefinition> b)
+		static bool AreSame(ParameterReference[] a, ParameterReference[] b)
+		{
+			var count = a.Length;
+
+			if (count != b.Length)
+				return false;
+
+			if (count == 0)
+				return true;
+
+			for (int i = 0; i < count; i++)
+				if (!AreSame(a[i].ParameterType, b[i].ParameterType))
+					return false;
+
+			return true;
+		}
+
+		static bool AreSame(Collection<ParameterDefinition> a, Collection<ParameterDefinition> b)
 		{
 			var count = a.Count;
 

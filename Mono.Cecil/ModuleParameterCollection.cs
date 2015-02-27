@@ -1,10 +1,10 @@
-//
-// ParameterDefinitionCollection.cs
+﻿//
+// GenericFieldReference.cs
 //
 // Author:
-//   Jb Evain (jbevain@gmail.com)
+//   Stephen Oberholtzer (stevie@qrpff.net)
 //
-// Copyright (c) 2008 - 2011 Jb Evain
+// Copyright (c) 2015 Stephen Oberholtzer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,27 +27,29 @@
 //
 
 using System;
-
+using System.Collections.Generic;
+using System.Text;
 using Mono.Collections.Generic;
 
-namespace Mono.Cecil {
+namespace Mono.Cecil
+{
+	/// <summary>
+	/// Represents the collection of parameters found in a MethodRef
+	/// </summary>
+	/// <remarks>
+	/// A MethodRef has a stripped-down version of the parameter list of the MethodDef it refers to
+	/// (basically, just the types.)
+	/// </remarks>
+	sealed class ModuleParameterCollection : ParameterReferenceCollection<ParameterReference>
+	{
+		internal ModuleParameterCollection (IMethodSignature method) : base(method) {}
 
-	sealed class ParameterDefinitionCollection : ParameterReferenceCollection<ParameterDefinition> {
+		internal ModuleParameterCollection(IMethodSignature method, int capacity) : base(method, capacity) { }
 
-		internal ParameterDefinitionCollection (IMethodSignature method) 
-			: base(method) 
+		protected override ParameterReference CreateParameterReference(TypeReference parameterType)
 		{
+			return new ModuleParameterReference(parameterType);
 		}
 
-		internal ParameterDefinitionCollection (IMethodSignature method, int capacity)
-			: base (method, capacity)
-		{
-		}
-
-
-		protected override ParameterDefinition CreateParameterReference(TypeReference parameterType)
-		{
-			return new ParameterDefinition(parameterType);
-		}
 	}
 }

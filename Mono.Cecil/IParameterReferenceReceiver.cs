@@ -1,10 +1,10 @@
-//
-// ParameterDefinitionCollection.cs
+﻿//
+// GenericFieldReference.cs
 //
 // Author:
-//   Jb Evain (jbevain@gmail.com)
+//   Stephen Oberholtzer (stevie@qrpff.net)
 //
-// Copyright (c) 2008 - 2011 Jb Evain
+// Copyright (c) 2015 Stephen Oberholtzer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,27 +27,24 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-using Mono.Collections.Generic;
-
-namespace Mono.Cecil {
-
-	sealed class ParameterDefinitionCollection : ParameterReferenceCollection<ParameterDefinition> {
-
-		internal ParameterDefinitionCollection (IMethodSignature method) 
-			: base(method) 
-		{
-		}
-
-		internal ParameterDefinitionCollection (IMethodSignature method, int capacity)
-			: base (method, capacity)
-		{
-		}
-
-
-		protected override ParameterDefinition CreateParameterReference(TypeReference parameterType)
-		{
-			return new ParameterDefinition(parameterType);
-		}
+namespace Mono.Cecil
+{
+	/// <summary>
+	/// Used by AssemblyReader to add the parameters it reads out of MethodDefs and MethodRefs and whatnot
+	/// </summary>
+	/// <remarks>
+	/// This interface would be internal, not public, except that C# has no way to express the FamANDAssem access mask
+	/// ('protected internal' gets FamORAssem)
+	/// </remarks>
+	public interface IParameterReferenceReceiver
+	{
+		/// <summary>
+		/// Adds the next parameter to the list.
+		/// </summary>
+		/// <param name="parameterType"></param>
+		void AddParameter(TypeReference parameterType);
 	}
 }

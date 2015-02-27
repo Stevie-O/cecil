@@ -33,10 +33,7 @@ using Mono.Collections.Generic;
 
 namespace Mono.Cecil {
 
-	public class MethodReference : MemberReference, IMethodSignature, IGenericParameterProvider, IGenericContext {
-
-		internal ParameterDefinitionCollection parameters;
-		MethodReturnType return_type;
+	public abstract class MethodReference : MemberReference, IMethodSignature, IMethodSignatureInternal, IGenericParameterProvider, IGenericContext {
 
 		bool has_this;
 		bool explicit_this;
@@ -58,18 +55,14 @@ namespace Mono.Cecil {
 			set { calling_convention = value; }
 		}
 
-		public virtual bool HasParameters {
-			get { return !parameters.IsNullOrEmpty (); }
-		}
+		public abstract bool HasParameters { get; }
 
-		public virtual Collection<ParameterDefinition> Parameters {
-			get {
-				if (parameters == null)
-					parameters = new ParameterDefinitionCollection (this);
+		/// <summary>
+		/// Provides a fast way to get the number of parameters in the method.
+		/// </summary>
+		public abstract int ParameterCount { get; }
 
-				return parameters;
-			}
-		}
+		public abstract ParameterReference[] GetParameters();
 
 		IGenericParameterProvider IGenericContext.Type {
 			get {
@@ -86,13 +79,13 @@ namespace Mono.Cecil {
 			get { return this; }
 		}
 
-        IGenericInstance IGenericContext.InstanceType {
-            get { return DeclaringType as IGenericInstance; }
-        }
+		IGenericInstance IGenericContext.InstanceType {
+			get { return DeclaringType as IGenericInstance; }
+		}
 
-        IGenericInstance IGenericContext.InstanceMethod {
-            get { return this as IGenericInstance; }
-        }
+		IGenericInstance IGenericContext.InstanceMethod {
+			get { return this as IGenericInstance; }
+		}
 
 		GenericParameterType IGenericParameterProvider.GenericParameterType {
 			get { return GenericParameterType.Method; }
@@ -111,22 +104,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		public TypeReference ReturnType {
-			get {
-				var return_type = MethodReturnType;
-				return return_type != null ? return_type.ReturnType : null;
-			}
-			set {
-				var return_type = MethodReturnType;
-				if (return_type != null)
-					return_type.ReturnType = value;
-			}
-		}
-
-		public virtual MethodReturnType MethodReturnType {
-			get { return return_type; }
-			set { return_type = value; }
-		}
+		public abstract TypeReference ReturnType { get; set; }
 
 		public override string FullName {
 			get {
@@ -148,10 +126,10 @@ namespace Mono.Cecil {
 				if (this.ReturnType.ContainsGenericParameter || base.ContainsGenericParameter)
 					return true;
 
-				var parameters = this.Parameters;
+				var parameters = this.GetParameters();
 
-				for (int i = 0; i < parameters.Count; i++)
-					if (parameters [i].ParameterType.ContainsGenericParameter)
+				for (int i = 0; i < parameters.Length; i++)
+					if (parameters[i].ParameterType.ContainsGenericParameter)
 						return true;
 
 				return false;
@@ -160,23 +138,17 @@ namespace Mono.Cecil {
 
 		internal MethodReference ()
 		{
-			this.return_type = new MethodReturnType (this);
 			this.token = new MetadataToken (TokenType.MemberRef);
 		}
 
-		public MethodReference (string name, TypeReference returnType)
+		public MethodReference (string name)
 			: base (name)
 		{
-			if (returnType == null)
-				throw new ArgumentNullException ("returnType");
-
-			this.return_type = new MethodReturnType (this);
-			this.return_type.ReturnType = returnType;
 			this.token = new MetadataToken (TokenType.MemberRef);
 		}
 
-		public MethodReference (string name, TypeReference returnType, TypeReference declaringType)
-			: this (name, returnType)
+		public MethodReference (string name, TypeReference declaringType)
+			: this (name)
 		{
 			if (declaringType == null)
 				throw new ArgumentNullException ("declaringType");
@@ -197,6 +169,20 @@ namespace Mono.Cecil {
 
 			return module.Resolve (this);
 		}
+
+		/// <summary>
+		/// Prepares to receive parameters from AssemblyReader
+		/// </summary>
+		/// <param name="numParameters">Hints at the number of parameters that are going to be added.</param>
+		/// <returns>An object that can be used to add parameter data to this object.</returns>
+		IParameterReferenceReceiver IMethodSignatureInternal.ReceiveParameters(int numParameters)
+		{
+			return ReceiveParameters(numParameters);
+
+		}
+
+		protected internal abstract IParameterReferenceReceiver ReceiveParameters(int numParameters);
+
 	}
 
 	static partial class Mixin {
@@ -211,8 +197,8 @@ namespace Mono.Cecil {
 			if (!self.HasParameters)
 				return -1;
 
-			var parameters = self.Parameters;
-			for (int i = 0; i < parameters.Count; i++)
+			var parameters = self.GetParameters();
+			for (int i = 0; i < parameters.Length; i++)
 				if (parameters [i].ParameterType.IsSentinel)
 					return i;
 

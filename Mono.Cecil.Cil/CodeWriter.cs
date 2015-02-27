@@ -429,7 +429,7 @@ namespace Mono.Cecil.Cil {
 					stack_size--;
 				// pop normal arguments
 				if (method.HasParameters)
-					stack_size -= method.Parameters.Count;
+					stack_size -= method.ParameterCount;
 				// pop function pointer
 				if (instruction.opcode.Code == Code.Calli)
 					stack_size--;

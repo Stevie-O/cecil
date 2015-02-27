@@ -26,15 +26,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Text;
 using Mono.Cecil.Cil;
 using Mono.Collections.Generic;
-
 using RVA = System.UInt32;
 
 namespace Mono.Cecil {
 
 	public sealed class MethodDefinition : MethodReference, IMemberDefinition, ISecurityDeclarationProvider {
 
+		ParameterDefinitionCollection parameters;
+		MethodReturnType return_type;
 		ushort attributes;
 		ushort impl_attributes;
 		internal volatile bool sem_attrs_ready;
@@ -437,20 +439,83 @@ namespace Mono.Cecil {
 
 		internal MethodDefinition ()
 		{
+			this.return_type = new MethodReturnType(this);
 			this.token = new MetadataToken (TokenType.Method);
 		}
 
 		public MethodDefinition (string name, MethodAttributes attributes, TypeReference returnType)
-			: base (name, returnType)
+			: base (name)
 		{
 			this.attributes = (ushort) attributes;
 			this.HasThis = !this.IsStatic;
-			this.token = new MetadataToken (TokenType.Method);
+			this.return_type = new MethodReturnType(this);
+			this.return_type.ReturnType = returnType;
+			this.token = new MetadataToken(TokenType.Method);
 		}
 
 		public override MethodDefinition Resolve ()
 		{
 			return this;
+		}
+
+		public override bool HasParameters
+		{
+			get { return !parameters.IsNullOrEmpty(); }
+		}
+
+		public override int ParameterCount
+		{
+			get { return parameters.GetCountOrZero(); }
+		}
+
+		public Collection<ParameterDefinition> Parameters
+		{
+			get
+			{
+				if (parameters == null)
+					parameters = new ParameterDefinitionCollection(this);
+
+				return parameters;
+			}
+		}
+
+		public override ParameterReference[] GetParameters()
+		{
+			if (!HasParameters) return new ParameterReference[0];
+			return Parameters.ToArray();
+		}
+
+		/// <summary>
+		/// Prepares to receive parameters from AssemblyReader
+		/// </summary>
+		/// <param name="numParameters">Hints at the number of parameters that are going to be added.</param>
+		/// <returns>An object that can be used to add parameter data to this object.</returns>
+		protected internal override IParameterReferenceReceiver ReceiveParameters(int numParameters)
+		{
+			if (parameters == null)
+				parameters = new ParameterDefinitionCollection(this, numParameters);
+			return parameters;
+		}
+
+		public override TypeReference ReturnType
+		{
+			get
+			{
+				var return_type = MethodReturnType;
+				return return_type != null ? return_type.ReturnType : null;
+			}
+			set
+			{
+				var return_type = MethodReturnType;
+				if (return_type != null)
+					return_type.ReturnType = value;
+			}
+		}
+
+		public MethodReturnType MethodReturnType
+		{
+			get { return return_type; }
+			set { return_type = value; }
 		}
 	}
 

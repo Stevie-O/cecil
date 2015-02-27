@@ -34,8 +34,6 @@ namespace Mono.Cecil {
 
 		ushort attributes;
 
-		internal IMethodSignature method;
-
 		object constant = Mixin.NotResolved;
 		Collection<CustomAttribute> custom_attributes;
 		MarshalInfo marshal_info;
@@ -43,10 +41,6 @@ namespace Mono.Cecil {
 		public ParameterAttributes Attributes {
 			get { return (ParameterAttributes) attributes; }
 			set { attributes = (ushort) value; }
-		}
-
-		public IMethodSignature Method {
-			get { return method; }
 		}
 
 		public int Sequence {

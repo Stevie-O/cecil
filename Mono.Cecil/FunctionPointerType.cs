@@ -33,7 +33,7 @@ using MD = Mono.Cecil.Metadata;
 
 namespace Mono.Cecil {
 
-	public sealed class FunctionPointerType : TypeSpecification, IMethodSignature {
+	public sealed class FunctionPointerType : TypeSpecification, IMethodSignature, IMethodSignatureInternal {
 
 		readonly MethodReference function;
 
@@ -56,17 +56,17 @@ namespace Mono.Cecil {
 			get { return function.HasParameters; }
 		}
 
-		public Collection<ParameterDefinition> Parameters {
-			get { return function.Parameters; }
+		public int ParameterCount {
+			get { return function.ParameterCount; }
+		}
+
+		public ParameterReference[] GetParameters() {
+			return function.GetParameters();
 		}
 
 		public TypeReference ReturnType {
-			get { return function.MethodReturnType.ReturnType; }
-			set { function.MethodReturnType.ReturnType = value; }
-		}
-
-		public MethodReturnType MethodReturnType {
-			get { return function.MethodReturnType; }
+			get { return function.ReturnType; }
+			set { function.ReturnType = value; }
 		}
 
 		public override string Name {
@@ -111,7 +111,7 @@ namespace Mono.Cecil {
 		public FunctionPointerType ()
 			: base (null)
 		{
-			this.function = new MethodReference ();
+			this.function = new ModuleMethodReference ();
 			this.function.Name = "method";
 			this.etype = MD.ElementType.FnPtr;
 		}
@@ -125,7 +125,12 @@ namespace Mono.Cecil {
 		{
 			return this;
 		}
-        
-        // TODO: how should ApplyTypeArguments behave here?
+		
+		// TODO: how should ApplyTypeArguments behave here?
+
+		IParameterReferenceReceiver IMethodSignatureInternal.ReceiveParameters(int numParameters)
+		{
+			return ((IMethodSignatureInternal)function).ReceiveParameters(numParameters);
+		}
 	}
 }
