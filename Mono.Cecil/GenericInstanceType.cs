@@ -35,11 +35,15 @@ namespace Mono.Cecil {
 
 		public override string FullName {
 			get {
-				var name = new StringBuilder ();
-				name.Append (base.FullName);
-				this.GenericInstanceFullName (name);
-				return name.ToString ();
+				return MemberFullName();
 			}
+		}
+
+		protected override string MemberFullName()
+		{
+			var name = new StringBuilder(base.MemberFullName());
+			this.GenericInstanceFullName(name);
+			return name.ToString();
 		}
 
 		public override bool IsGenericInstance {
@@ -57,41 +61,41 @@ namespace Mono.Cecil {
 		public GenericInstanceType (TypeReference type)
 			: this(type, null)
 		{
-        }
+		}
 
 		public GenericInstanceType (TypeReference type, ICollection<TypeReference> typeArguments)
 			: base(type)
 		{
-        	base.IsValueType = type.IsValueType;
+			base.IsValueType = type.IsValueType;
 			this.etype = MD.ElementType.GenericInst;
-            if (typeArguments != null)
-                arguments = new Collection<TypeReference>(typeArguments);
+			if (typeArguments != null)
+				arguments = new Collection<TypeReference>(typeArguments);
 		}
 
-        public override TypeReference ApplyTypeArguments(IGenericContext ctx)
-        {
-            // TODO: verify this is totally appropriate
-            // It *might* be, if you have a situation like this:
-            // class Foo<T>() {
-            //      List<T> x;
-            // }
-            // where the type of 'x' is actually a GenericTypeInstance where one of the parameters is a generic type parameter
-            if (!HasGenericParameters) return this;
+		public override TypeReference ApplyTypeArguments(IGenericContext ctx)
+		{
+			// TODO: verify this is totally appropriate
+			// It *might* be, if you have a situation like this:
+			// class Foo<T>() {
+			//      List<T> x;
+			// }
+			// where the type of 'x' is actually a GenericTypeInstance where one of the parameters is a generic type parameter
+			if (!HasGenericParameters) return this;
 
-            bool any_different = false;
-            Collection<TypeReference> new_arguments = new Collection<TypeReference>();
-            foreach (TypeReference tr in GenericArguments)
-            {
-                TypeReference tr_mapped = tr.ApplyTypeArguments(ctx);
-                new_arguments.Add(tr_mapped);
-                if (tr_mapped != tr) any_different = true;
-            }
-            // if we didn't replace any of the type arguments, then return ourselves unchanged
-            // This lets other code detect that nothing is different and optimize accordingly
-            if (!any_different) return this;
-            GenericInstanceType mapped_git = new GenericInstanceType(ElementType);
-            mapped_git.arguments = new_arguments;
-            return mapped_git;
-        }
+			bool any_different = false;
+			Collection<TypeReference> new_arguments = new Collection<TypeReference>();
+			foreach (TypeReference tr in GenericArguments)
+			{
+				TypeReference tr_mapped = tr.ApplyTypeArguments(ctx);
+				new_arguments.Add(tr_mapped);
+				if (tr_mapped != tr) any_different = true;
+			}
+			// if we didn't replace any of the type arguments, then return ourselves unchanged
+			// This lets other code detect that nothing is different and optimize accordingly
+			if (!any_different) return this;
+			GenericInstanceType mapped_git = new GenericInstanceType(ElementType);
+			mapped_git.arguments = new_arguments;
+			return mapped_git;
+		}
 	}
 }
