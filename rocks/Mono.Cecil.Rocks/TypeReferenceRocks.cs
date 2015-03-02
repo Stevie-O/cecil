@@ -19,6 +19,19 @@ namespace Mono.Cecil.Rocks {
 #endif
 	static class TypeReferenceRocks {
 
+		/// <summary>
+		/// Attempts to resolve this reference; returns null if the reference cannot be resolved.
+		/// </summary>
+		/// <param name="self">TypeReference to be resolved</param>
+		/// <returns></returns>
+		public static TypeDefinition SafeResolve(this TypeReference self)
+		{
+			if (self == null)
+				throw new ArgumentNullException("self");
+			if (self.Module == null) return null;
+			return self.Resolve();
+		}
+
 		public static ArrayType MakeArrayType (this TypeReference self)
 		{
 			return new ArrayType (self);

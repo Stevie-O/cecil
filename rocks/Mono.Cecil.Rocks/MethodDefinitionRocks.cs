@@ -68,5 +68,11 @@ namespace Mono.Cecil.Rocks {
 		{
 			return MetadataResolver.GetMethod (type.Methods, method);
 		}
+
+		public static int GetParameterCount(this MethodDefinition self)
+		{
+			if (!self.HasParameters) return 0;
+			return self.Parameters.Count;
+		}
 	}
 }
