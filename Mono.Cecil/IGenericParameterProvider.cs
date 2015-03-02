@@ -33,8 +33,8 @@ namespace Mono.Cecil {
 		bool IsDefinition { get; }
 		IGenericParameterProvider Type { get; }
 		IGenericParameterProvider Method { get; }
-        IGenericInstance InstanceType { get; }
-        IGenericInstance InstanceMethod { get; }
+		IGenericInstance InstanceType { get; }
+		IGenericInstance InstanceMethod { get; }
 	}
 
 	static partial class Mixin {
