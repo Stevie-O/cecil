@@ -1,0 +1,97 @@
+﻿//
+// GenericFieldReference.cs
+//
+// Author:
+//   Stephen Oberholtzer (stevie@qrpff.net)
+//
+// Copyright (c) 2015 Stephen Oberholtzer
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Mono.Cecil
+{
+    /// <summary>
+    /// Represents a reference to a property that belongs to a constructed type.
+    /// </summary>
+    /// <remarks>
+    /// Example:
+    /// <code><![CDATA[
+    /// 
+    ///public class SomeClass<T>
+    ///{
+    ///    public T SomeProperty { get; set; }
+    ///}
+    ///]]></code>
+    /// A ConstructedPropertyReference can refer to <c>SomeClass&lt;int&gt;.SomeProperty</c>
+    /// </remarks>
+    public class ConstructedPropertyReference : PropertyReference
+    {
+        readonly PropertyReference _underlyingReference;
+        readonly IGenericContext _ctx;
+
+        public ConstructedPropertyReference(PropertyReference r, IGenericContext ctx)
+            : base(r.Name, r.PropertyType)
+        {
+            _underlyingReference = r;
+            _ctx = ctx;
+            DeclaringType = (ctx.InstanceType as TypeReference) ?? r.DeclaringType;
+            PropertyType = r.PropertyType.ApplyTypeArguments(ctx);
+        }
+
+        public override bool HasParameters
+        {
+            get { return _underlyingReference.HasParameters; }
+        }
+
+        public override ParameterReference[] GetParameters()
+        {
+            PropertyReference realProperty = _underlyingReference;
+
+            ParameterReference[] baseParams = realProperty.GetParameters();
+            ParameterReference[] mappedParams = new ParameterReference[baseParams.Length];
+            if (baseParams.Length == 0) return baseParams;
+            int i = 0;
+            foreach (ParameterReference p in baseParams)
+            {
+                ParameterReference p2 = new ModuleParameterReference(p.ParameterType.ApplyTypeArguments(_ctx));
+                mappedParams[i++] = p2;
+            }
+            return mappedParams;
+        }
+
+
+        public override PropertyDefinition Resolve()
+        {
+            return _underlyingReference.Resolve();
+        }
+
+        public override string Name
+        {
+            get { return _underlyingReference.Name; }
+            set { _underlyingReference.Name = value; }
+        }
+
+    }
+}

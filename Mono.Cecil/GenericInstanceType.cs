@@ -119,5 +119,55 @@ namespace Mono.Cecil {
 			mapped_git.arguments = new_arguments;
 			return mapped_git;
 		}
+
+		public override FieldReference[] GetFields()
+		{
+			return Array.ConvertAll(ElementType.GetFields(), (r) => Mixin.GetRuntimeReference(r, this));
+		}
+
+		public override MethodReference[] GetMethods()
+		{
+			return Array.ConvertAll(ElementType.GetMethods(), (r) => Mixin.GetRuntimeReference(r, this));
+		}
+
+		public override PropertyReference[] GetProperties()
+		{
+			return Array.ConvertAll(ElementType.GetProperties(), (r) => Mixin.GetRuntimeReference(r, this));
+		}
+
+		public override EventReference[] GetEvents()
+		{
+			return Array.ConvertAll(ElementType.GetEvents(), (r) => Mixin.GetRuntimeReference(r, this));
+		}
+
+		public override TypeReference[] GetInterfaces()
+		{
+			TypeReference[] ifaces = base.GetInterfaces();
+			bool any_generic = false;
+			foreach (TypeReference iface in ifaces)
+			{
+				if (iface.HasGenericParameters)
+				{
+					any_generic = true;
+					break;
+				}
+			}
+			// If none of the interfaces have generic type arguments, we don't need to do anything fancy
+			if (!any_generic) return ifaces;
+			TypeReference[] ifaces_concrete = new TypeReference[ifaces.Length];
+			for (int i = 0; i < ifaces.Length; i++)
+			{
+				ifaces_concrete[i] = ifaces[i].ApplyTypeArguments(this);
+			}
+			return ifaces_concrete;
+		}
+
+		public override TypeReference GetBaseType()
+		{
+			TypeReference genericBaseType = base.GetBaseType();
+			// e.g.: class Foo<T> : Bar<T>
+			// this will make Foo<int> return Bar<int>
+			return genericBaseType.ApplyTypeArguments(this);
+		}
 	}
 }

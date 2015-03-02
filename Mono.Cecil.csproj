@@ -59,6 +59,10 @@
     <Compile Include="Mono.Cecil\AssemblyWriter.cs" />
     <Compile Include="Mono.Cecil\BaseAssemblyResolver.cs" />
     <Compile Include="Mono.Cecil\CallSite.cs" />
+    <Compile Include="Mono.Cecil\ConstructedEventReference.cs" />
+    <Compile Include="Mono.Cecil\ConstructedFieldReference.cs" />
+    <Compile Include="Mono.Cecil\ConstructedMethodReference.cs" />
+    <Compile Include="Mono.Cecil\ConstructedPropertyReference.cs" />
     <Compile Include="Mono.Cecil\IParameterReferenceReceiver.cs" />
     <Compile Include="Mono.Cecil\ModuleMethodReference.cs" />
     <Compile Include="Mono.Cecil\ModuleParameterCollection.cs" />
