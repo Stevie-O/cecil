@@ -300,7 +300,7 @@ namespace Mono.Cecil {
 
 		public virtual TypeReference GetBaseType()
 		{
-			return Resolve().GetBaseType();
+			return Resolve().BaseType;
 		}
 
 		public virtual TypeReference[] GetInterfaces()
