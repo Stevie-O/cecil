@@ -565,6 +565,23 @@ namespace Mono.Cecil {
 			this.GenericParametersFullName(sb);
 			return sb.ToString();
 		}
+
+        public override bool ContainsGenericParameter
+        {
+            get
+            {
+                if (base.ContainsGenericParameter) return true;
+
+                if (HasOverrides)
+                {
+                    foreach (MethodReference ovr in Overrides)
+                        if (ovr.ContainsGenericParameter)
+                            return true;
+                }
+
+                return false;
+            }
+        }
 	}
 
 	static partial class Mixin {
