@@ -34,7 +34,11 @@ namespace Mono.Cecil.Rocks
                 }
                 else if (allowExplicit && tmethoddef.IsPrivate && tmethoddef.HasOverrides)
                 {
-                    MethodReference overridden_method = tmethoddef.Overrides[0];
+                    MethodReference[] overrides = tmethod.GetOverrides();
+                    MethodReference overridden_method = overrides[0];
+                    // Nasty kludge until I can figure out what to do about overrides of methods belonging to generic interfaces
+                    if (overridden_method.ContainsGenericParameter)
+                        overridden_method = overridden_method.GetRuntimeReference(overridden_method.DeclaringType);
                     if (MetadataResolver.AreSame(overridden_method.DeclaringType, imethod.DeclaringType)
                         && MetadataResolver.MethodsMatch(overridden_method, imethod, true)
                         )
