@@ -109,9 +109,8 @@ namespace Mono.Cecil {
 		public override string FullName {
 			get {
 				var builder = new StringBuilder ();
-				builder.Append (ReturnType.FullName)
-					.Append (" ")
-					.Append (MemberFullName ());
+				if (ReturnType != null) builder.Append (ReturnType.FullName).Append(" ");
+				builder.Append (MemberFullName ());
 				this.MethodSignatureFullName (builder);
 				return builder.ToString ();
 			}
