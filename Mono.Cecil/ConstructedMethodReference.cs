@@ -65,6 +65,11 @@ namespace Mono.Cecil
             _ctx = ctx;
         }
 
+        public override MethodReference[] GetOverrides()
+        {
+            return Array.ConvertAll(ElementMethod.GetOverrides(), (r) => Mixin.GetRuntimeReference(r, _ctx));
+        }
+
         public override TypeReference DeclaringType
         {
             get { return (_ctx.InstanceType as TypeReference) ?? ElementMethod.DeclaringType; }
