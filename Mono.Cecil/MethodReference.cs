@@ -204,6 +204,15 @@ namespace Mono.Cecil {
 			if (ctx == this && !ContainsGenericParameter) return this;
 			return new ConstructedMethodReference(this, ctx);
 		}
+
+        /// <summary>
+        /// Gets the override list for this method
+        /// </summary>
+        /// <returns></returns>
+        public virtual MethodReference[] GetOverrides()
+        {
+            return Resolve().Overrides.ToArray();
+        }
 	}
 
 	static partial class Mixin {
