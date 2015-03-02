@@ -113,13 +113,13 @@ namespace Mono.Cecil {
 			get { return null; }
 		}
 
-        IGenericInstance IGenericContext.InstanceType {
-            get { return this as IGenericInstance; }
-        }
+		IGenericInstance IGenericContext.InstanceType {
+			get { return this as IGenericInstance; }
+		}
 
-        IGenericInstance IGenericContext.InstanceMethod {
-            get { return null; }
-        }
+		IGenericInstance IGenericContext.InstanceMethod {
+			get { return null; }
+		}
 
 		GenericParameterType IGenericParameterProvider.GenericParameterType {
 			get { return GenericParameterType.Type; }
@@ -198,6 +198,16 @@ namespace Mono.Cecil {
 		}
 
 		public virtual bool IsSentinel {
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Gets whether this is a constructed type (one that does not exist directly, but is created on-the-fly),
+		/// such as generic type instances, array types, pointers, and ref/out parameters.
+		/// </summary>
+		/// <remarks>
+		/// </remarks>
+		public virtual bool IsConstructed {
 			get { return false; }
 		}
 
@@ -288,17 +298,47 @@ namespace Mono.Cecil {
 			return module.Resolve (this);
 		}
 
-        /// <summary>
-        /// Returns a TypeReference, with placeholder types (parameters) replaced by their concrete versions (arguments).
-        /// </summary>
-        /// <param name="ctx">Context containing type arguments.</param>
-        /// <returns>An appropriate TypeReference instance.</returns>
-        public virtual TypeReference ApplyTypeArguments(IGenericContext ctx)
-        {
-            if (!ContainsGenericParameter)
-                return this;
-            throw new NotImplementedException();
-        }
+		public virtual TypeReference GetBaseType()
+		{
+			return Resolve().GetBaseType();
+		}
+
+		public virtual TypeReference[] GetInterfaces()
+		{
+			return Array.ConvertAll(Resolve().Interfaces.ToArray(), (i) => i.InterfaceType);
+		}
+
+		public virtual MethodReference[] GetMethods()
+		{
+			return Resolve().Methods.ToArray();
+		}
+
+		public virtual FieldReference[] GetFields()
+		{
+			return Resolve().Fields.ToArray();
+		}
+
+		public virtual EventReference[] GetEvents()
+		{
+			return Resolve().Events.ToArray();
+		}
+
+		public virtual PropertyReference[] GetProperties()
+		{
+			return Resolve().Properties.ToArray();
+		}
+
+		/// <summary>
+		/// Returns a TypeReference, with placeholder types (parameters) replaced by their concrete versions (arguments).
+		/// </summary>
+		/// <param name="ctx">Context containing type arguments.</param>
+		/// <returns>An appropriate TypeReference instance.</returns>
+		public virtual TypeReference ApplyTypeArguments(IGenericContext ctx)
+		{
+			if (!ContainsGenericParameter)
+				return this;
+			throw new NotImplementedException();
+		}
 	}
 
 	static partial class Mixin {

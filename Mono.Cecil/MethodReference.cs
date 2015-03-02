@@ -171,6 +171,28 @@ namespace Mono.Cecil {
 
 		protected internal abstract IParameterReferenceReceiver ReceiveParameters(int numParameters);
 
+		/// <summary>
+		/// Gets a MethodReference as it will be seen by the .NET Runtime, with generic type parameters
+		/// replaced by their arguments.
+		/// </summary>
+		/// <returns>A MethodReference that describes a type as viewed by code executing in the .NET runtime.</returns>
+		/// <remarks>
+		/// </remarks>
+		public virtual MethodReference GetRuntimeReference()
+		{
+			if (!(this.IsGenericInstance || this.DeclaringType.IsGenericInstance)) return this;
+			return GetRuntimeReference(this);
+		}
+
+		/// <summary>
+		/// Gets a MethodReference as it will be seen by the .NET Runtime, with generic type parameters
+		/// replaced by the arguments in <param name="ctx" />.
+		/// </summary>
+		public virtual MethodReference GetRuntimeReference(IGenericContext ctx)
+		{
+			if (ctx == this && !ContainsGenericParameter) return this;
+			return new ConstructedMethodReference(this, ctx);
+		}
 	}
 
 	static partial class Mixin {
@@ -191,6 +213,16 @@ namespace Mono.Cecil {
 					return i;
 
 			return -1;
+		}
+
+		/// <summary>
+		/// Compatible with Converter&lt;MethodReference, MethodReference&gt; and thus Array.ConvertAll
+		/// </summary>
+		/// <param name="r">Method reference</param>
+		/// <returns>Result of calling r.GetRuntimeReference()</returns>
+		public static MethodReference GetRuntimeReference(MethodReference r, IGenericContext ctx)
+		{ 
+			return r.GetRuntimeReference(ctx);
 		}
 	}
 }
