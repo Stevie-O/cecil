@@ -73,7 +73,14 @@ namespace Mono.Cecil {
 
 		public override string ToString ()
 		{
-			return name;
+			if (!string.IsNullOrEmpty(Name))
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.Append(Name).Append(' ');
+				sb.Append(ParameterType.ToString());
+				return sb.ToString();
+			}
+			return ParameterType.ToString();
 		}
 
 		public abstract ParameterDefinition Resolve ();
