@@ -517,6 +517,15 @@ namespace Mono.Cecil {
 			get { return return_type; }
 			set { return_type = value; }
 		}
+
+		protected override string MemberFullName()
+		{
+			string fullName = base.MemberFullName();
+			if (!HasGenericParameters) return fullName;
+			StringBuilder sb = new StringBuilder(fullName);
+			this.GenericParametersFullName(sb);
+			return sb.ToString();
+		}
 	}
 
 	static partial class Mixin {

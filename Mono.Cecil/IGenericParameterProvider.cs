@@ -27,6 +27,7 @@
 //
 
 
+using System.Text;
 using Mono.Collections.Generic;
 
 namespace Mono.Cecil {
@@ -50,8 +51,8 @@ namespace Mono.Cecil {
 		bool IsDefinition { get; }
 		IGenericParameterProvider Type { get; }
 		IGenericParameterProvider Method { get; }
-        IGenericInstance InstanceType { get; }
-        IGenericInstance InstanceMethod { get; }
+		IGenericInstance InstanceType { get; }
+		IGenericInstance InstanceMethod { get; }
 	}
 
 	static partial class Mixin {
@@ -71,6 +72,20 @@ namespace Mono.Cecil {
 			return module.HasImage ()
 				? module.Read (ref collection, self, (provider, reader) => reader.ReadGenericParameters (provider))
 				: collection = new GenericParameterCollection (self);
+		}
+
+		public static void GenericParametersFullName(this IGenericParameterProvider self, StringBuilder builder)
+		{
+			if (!self.HasGenericParameters) return;
+			builder.Append("<");
+			var arguments = self.GenericParameters;
+			for (int i = 0; i < arguments.Count; i++)
+			{
+				if (i > 0)
+					builder.Append(",");
+				builder.Append(arguments[i].FullName);
+			}
+			builder.Append(">");
 		}
 	}
 }
