@@ -259,33 +259,38 @@ namespace Mono.Cecil {
 			return null;
 		}
 
+		public static bool MethodsMatch(MethodReference method, MethodReference reference, bool checkName)
+		{
+			if (method == reference) return true;
+
+			if (checkName && method.Name != reference.Name)
+				return false;
+
+			if (method.HasGenericParameters != reference.HasGenericParameters)
+				return false;
+
+			if (method.HasGenericParameters && method.GenericParameters.Count != reference.GenericParameters.Count)
+				return false;
+
+			if (!AreSame(method.ReturnType, reference.ReturnType))
+				return false;
+
+			if (method.ParameterCount != reference.ParameterCount)
+				return false;
+
+			if (!AreSame(method.GetParameters(), reference.GetParameters()))
+				return false;
+
+			return true;
+		}
+
 		public static MethodDefinition GetMethod (Collection<MethodDefinition> methods, MethodReference reference)
 		{
 			for (int i = 0; i < methods.Count; i++) {
 				var method = methods [i];
 
-				if (method.Name != reference.Name)
-					continue;
-
-				if (method.HasGenericParameters != reference.HasGenericParameters)
-					continue;
-
-				if (method.HasGenericParameters && method.GenericParameters.Count != reference.GenericParameters.Count)
-					continue;
-
-				if (!AreSame (method.ReturnType, reference.ReturnType))
-					continue;
-
-				if (method.HasParameters != reference.HasParameters)
-					continue;
-
-				if (!method.HasParameters && !reference.HasParameters)
+				if (MethodsMatch(method, reference, true))
 					return method;
-
-				if (!AreSame (method.Parameters, reference.Parameters))
-					continue;
-
-				return method;
 			}
 
 			return null;
@@ -374,7 +379,7 @@ namespace Mono.Cecil {
 			return a.Position == b.Position;
 		}
 
-		static bool AreSame (TypeReference a, TypeReference b)
+		public static bool AreSame (TypeReference a, TypeReference b)
 		{
 			if (ReferenceEquals (a, b))
 				return true;
