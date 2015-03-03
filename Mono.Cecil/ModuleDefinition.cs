@@ -1068,6 +1068,11 @@ namespace Mono.Cecil {
 			}
 		}
 
+        /// <summary>
+        /// Gets/sets the filename that the module was loaded from (if available)
+        /// </summary>
+        public string OriginalFilename { get; set; }
+
 		public static ModuleDefinition ReadModule (string fileName)
 		{
 			return ReadModule (fileName, new ReaderParameters (ReadingMode.Deferred));
@@ -1087,7 +1092,9 @@ namespace Mono.Cecil {
 			}
 
 			try {
-				return ReadModule (Disposable.Owned (stream), fileName, parameters);
+				var m = ReadModule (Disposable.Owned (stream), fileName, parameters);
+				m.Assembly.OriginalFilename = m.OriginalFilename = fileName;
+				return m;
 			} catch (Exception) {
 				stream.Dispose ();
 				throw;
@@ -1140,7 +1147,7 @@ namespace Mono.Cecil {
 		public void Write ()
 		{
 			Write (new WriterParameters ());
-		}
+			}
 
 		public void Write (WriterParameters parameters)
 		{
@@ -1323,7 +1330,7 @@ namespace Mono.Cecil {
 		public static bool IsWindowsMetadata (this ModuleDefinition module)
 		{
 			return module.MetadataKind != MetadataKind.Ecma335;
-		}
+	}
 
 		public static byte [] ReadAll (this Stream self)
 		{

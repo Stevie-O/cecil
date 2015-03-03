@@ -291,10 +291,13 @@ namespace Mono.Cecil {
 			if (gac_paths == null)
 				gac_paths = GetGacPaths ();
 
+            AssemblyDefinition gac_assembly;
 			if (on_mono)
-				return GetAssemblyInMonoGac (reference, parameters);
-
-			return GetAssemblyInNetGac (reference, parameters);
+                gac_assembly = GetAssemblyInMonoGac(reference, parameters);
+            else
+                gac_assembly = GetAssemblyInNetGac(reference, parameters);
+            if (gac_assembly != null) gac_assembly.LoadedFromGAC = true;
+            return gac_assembly;
 		}
 
 		AssemblyDefinition GetAssemblyInMonoGac (AssemblyNameReference reference, ReaderParameters parameters)
