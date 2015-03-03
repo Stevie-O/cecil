@@ -99,6 +99,15 @@ namespace Mono.Cecil {
 			}
 		}
 
+        /// <summary>
+        /// Tracks wether or not the assembly was loaded from the Global Assembly Cache.
+        /// </summary>
+        public bool LoadedFromGAC { get; set; }
+        /// <summary>
+        /// Gets/sets the filename that the assembly was loaded from (if available)
+        /// </summary>
+        public string OriginalFilename { get; set; }
+
 		public Collection<SecurityDeclaration> SecurityDeclarations {
 			get { return security_declarations ?? (this.GetSecurityDeclarations (ref security_declarations, main_module)); }
 		}
@@ -156,6 +165,7 @@ namespace Mono.Cecil {
 			if (assembly == null)
 				throw new ArgumentException ();
 
+            assembly.OriginalFilename = module.OriginalFilename;
 			return assembly;
 		}
 

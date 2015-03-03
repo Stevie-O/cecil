@@ -918,6 +918,11 @@ namespace Mono.Cecil {
 			ProcessDebugHeader ();
 		}
 
+        /// <summary>
+        /// Gets/sets the filename that the module was loaded from (if available)
+        /// </summary>
+        public string OriginalFilename { get; set; }
+
 		public static ModuleDefinition ReadModule (string fileName)
 		{
 			return ReadModule (fileName, new ReaderParameters (ReadingMode.Deferred));
@@ -931,7 +936,9 @@ namespace Mono.Cecil {
 		public static ModuleDefinition ReadModule (string fileName, ReaderParameters parameters)
 		{
 			using (var stream = GetFileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				return ReadModule (stream, parameters);
+				ModuleDefinition m = ReadModule (stream, parameters);
+                m.Assembly.OriginalFilename = m.OriginalFilename = fileName;
+                return m;
 			}
 		}
 
