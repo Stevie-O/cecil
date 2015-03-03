@@ -8,14 +8,14 @@ namespace Mono.Cecil.Rocks
 	/// <summary>
 	/// Used to perform the equivalent of the .NET GetInterfaceMapping() method
 	/// </summary>
-	class InterfaceMethodMapper
+	public class InterfaceMethodMapper
 	{
 		// more info here: https://groups.google.com/forum/#!topic/mono-cecil/s8BPJcK1u08
 
 		public List<MethodReference> imethodlist = new List<MethodReference>();
 		public List<MethodReference> tmethodlist = new List<MethodReference>();
 
-		static MethodReference FindInterfaceImplementation(TypeReference type, MethodReference imethod, bool allowExplicit)
+		public static MethodReference FindInterfaceImplementation(TypeReference type, MethodReference imethod, bool allowExplicit)
 		{
 			MethodReference implicit_impl = null;
 
