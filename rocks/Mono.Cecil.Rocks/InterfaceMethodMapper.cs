@@ -52,7 +52,7 @@ namespace Mono.Cecil.Rocks
 
             TypeReference baseType = type.GetBaseType();
             if (baseType != null)
-                return FindInterfaceImplementation(baseType, imethod, false);
+                return FindInterfaceImplementation(baseType, imethod, allowExplicit);
 
             return null;
         }
