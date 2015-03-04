@@ -59,6 +59,11 @@ namespace Mono.Cecil {
 			return this.Resolve ();
 		}
 
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Property; }
+        }
+
 		public new abstract PropertyDefinition Resolve ();
 
 		public abstract bool HasParameters { get; }

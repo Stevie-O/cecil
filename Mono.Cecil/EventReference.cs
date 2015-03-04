@@ -37,7 +37,12 @@ namespace Mono.Cecil {
 			return this.Resolve ();
 		}
 
-		public new abstract EventDefinition Resolve ();
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Event; }
+        }
+
+		public abstract EventDefinition Resolve ();
 
 		/// <summary>
 		/// Gets an EventReference as it will be seen by the .NET Runtime, with generic type parameters

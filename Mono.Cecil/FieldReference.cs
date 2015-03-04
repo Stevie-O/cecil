@@ -51,6 +51,11 @@ namespace Mono.Cecil {
 			this.DeclaringType = declaringType;
 		}
 
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Field; }
+        }
+
 		protected override IMemberDefinition ResolveDefinition ()
 		{
 			return this.Resolve ();

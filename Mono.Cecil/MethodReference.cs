@@ -144,6 +144,11 @@ namespace Mono.Cecil {
 			return this;
 		}
 
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Method; }
+        }
+
 		protected override IMemberDefinition ResolveDefinition ()
 		{
 			return this.Resolve ();

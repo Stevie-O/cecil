@@ -103,5 +103,7 @@ namespace Mono.Cecil {
 		{
 			return FullName;
 		}
+
+        public abstract MemberDefinitionType MemberType { get; }
 	}
 }

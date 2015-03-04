@@ -10,6 +10,24 @@
 
 namespace Mono.Cecil {
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// These values largely correspond to those used by the .NET System.Reflection.MemberInfo::MemberType
+    /// (without separate values for constructors and nested types) 
+    /// </remarks>
+    [System.Flags]
+    public enum MemberDefinitionType
+    {
+        None = 0,
+        Event = 0x02,
+        Field = 0x04,
+        Method = 0x08,
+        Property = 0x10,
+        Type = 0x20,
+    }
+
 	public interface IMemberDefinition : ICustomAttributeProvider {
 
 		string Name { get; set; }
@@ -19,6 +37,7 @@ namespace Mono.Cecil {
 		bool IsRuntimeSpecialName { get; set; }
 
 		TypeDefinition DeclaringType { get; set; }
+        MemberDefinitionType MemberType { get; }
 	}
 
 	static partial class Mixin {
