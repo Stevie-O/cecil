@@ -72,7 +72,12 @@ namespace Mono.Cecil {
 			property_type = propertyType;
 		}
 
-		public abstract PropertyDefinition Resolve ();
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Property; }
+        }
+        
+        public abstract PropertyDefinition Resolve();
 
 		public abstract bool HasParameters { get; }
 
@@ -141,7 +146,7 @@ namespace Mono.Cecil {
 			if (ctx == this.DeclaringType && !ContainsGenericParameter) return this;
 			return new ConstructedPropertyReference(this, ctx);
 		}
-	}
+    }
 
 	static partial class Mixin
 	{

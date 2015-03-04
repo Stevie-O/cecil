@@ -71,7 +71,12 @@ namespace Mono.Cecil {
 			this.DeclaringType = declaringType;
 		}
 
-		public virtual FieldDefinition Resolve ()
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Field; }
+        }
+
+        public virtual FieldDefinition Resolve()
 		{
 			var module = this.Module;
 			if (module == null)

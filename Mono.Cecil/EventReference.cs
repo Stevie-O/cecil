@@ -52,6 +52,11 @@ namespace Mono.Cecil {
 			event_type = eventType;
 		}
 
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Event; }
+        }
+
 		public abstract EventDefinition Resolve ();
 
 		/// <summary>

@@ -282,7 +282,12 @@ namespace Mono.Cecil {
 			return this;
 		}
 
-		public virtual TypeDefinition Resolve ()
+        public override MemberDefinitionType MemberType
+        {
+            get { return MemberDefinitionType.Type; }
+        }
+
+        public virtual TypeDefinition Resolve()
 		{
 			var module = this.Module;
 			if (module == null)
