@@ -84,18 +84,18 @@ namespace Mono.Cecil {
 				builder.Append(PropertyType.ToString());
 				builder.Append(' ');
 				builder.Append(MemberFullName());
-				builder.Append('(');
 				if (HasParameters)
 				{
-					var parameters = GetParameters();
+                    builder.Append('[');
+                    var parameters = GetParameters();
 					for (int i = 0; i < parameters.Length; i++)
 					{
 						if (i > 0)
 							builder.Append(',');
 						builder.Append(parameters[i].ParameterType.FullName);
 					}
-				}
-				builder.Append(')');
+                    builder.Append(']');
+                }
 				return builder.ToString();
 			}
 		}
