@@ -56,6 +56,7 @@ namespace Mono.Cecil {
 
 		TypeDefinition DeclaringType { get; set; }
         MemberDefinitionType MemberType { get; }
+        ModuleDefinition Module { get; }
 	}
 
 	static partial class Mixin {
