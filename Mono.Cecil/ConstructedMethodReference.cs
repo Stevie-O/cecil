@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Mono.Collections.Generic;
 
 namespace Mono.Cecil
 {
@@ -55,7 +56,7 @@ namespace Mono.Cecil
     /// <item><c>AnotherClass.DoSomething3&lt;int&gt;</c></item>
     /// </list>
     /// </remarks>
-    public sealed class ConstructedMethodReference : MethodSpecification
+    public sealed class ConstructedMethodReference : MethodSpecification, IGenericInstance
     {
         readonly IGenericContext _ctx;
 
@@ -107,6 +108,24 @@ namespace Mono.Cecil
             set
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        public bool HasGenericArguments
+        {
+            get
+            {
+                var impl = ElementMethod as IGenericInstance;
+                return impl != null && impl.HasGenericArguments;
+            }
+        }
+
+        public Collection<TypeReference> GenericArguments
+        {
+            get
+            {
+                var impl = ElementMethod as IGenericInstance;
+                return impl != null ? impl.GenericArguments : null;
             }
         }
 
